@@ -1,0 +1,45 @@
+# https://taskfile.dev
+
+version: "3"
+
+vars:
+    DATA: '{{.DATA | default "."}}'
+
+tasks:
+    docker:
+        dir: "{{.USER_WORKING_DIR}}"
+        cmds:
+            - docker build -t messenger .
+
+    run-docker:
+        dir: "{{.USER_WORKING_DIR}}"
+        cmds:
+            - task: docker
+            - docker run -d -p 8090:8090 -v {{.DATA}}/backend/pb_data:/data/pb_data --name messenger messenger
+
+    build:
+        dir: "{{.USER_WORKING_DIR}}"
+        cmds:
+            - task: build-frontend
+            - task: build-backend
+
+    build-backend:
+        dir: backend
+        cmds:
+            - go build -o ../bin/server ./cmd/server/main.go
+
+    build-frontend:
+        dir: ui
+        cmds:
+            - pnpm install
+            - pnpm run build
+
+    run:
+        dir: backend
+        cmds:
+            - go run cmd/server/main.go serve --dir pb_data
+
+    collections:
+        dir: backend
+        cmds:
+            - go run cmd/server/main.go migrate collections
