@@ -140,6 +140,18 @@ export const createMessage = async (data: CreateMessageData, options: {
     }
 };
 
+export const deleteMessage = async (messageId: string) => {
+    try {
+        const deleted = await pb.collection('messages').delete(messageId)
+        if (!deleted) {
+            console.log("message is not deleted")
+        }
+    } catch (error) {
+        console.error('failed to delete message:', error)
+        throw error
+    }
+}
+
 // Get messages for specific chat
 export const getChatMessages = async (chatId: string, options: {
     page?: number;
@@ -259,3 +271,5 @@ export const unsubscribeFromAllMessages = () => {
         throw error;
     }
 };
+
+

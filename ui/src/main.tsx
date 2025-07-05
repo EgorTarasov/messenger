@@ -9,6 +9,8 @@ configure({
 });
 
 import "./index.css";
+import { Toaster } from "./components/ui/sonner";
+
 
 // Create a new router instance
 const router = createRouter({
@@ -33,6 +35,7 @@ if (rootElement && !rootElement.innerHTML) {
   root.render(
     <StrictMode>
       <RouterProvider router={router} />
+      <Toaster />
     </StrictMode>,
   );
 }

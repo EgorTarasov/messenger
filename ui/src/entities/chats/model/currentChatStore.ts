@@ -18,11 +18,14 @@ class CurrentChatStore {
     currentPage: number = 1
     hasMore: boolean = true
     totalItems: number = 0
+
+
     private realtimeUnsubscribe: (() => void) | null = null
 
     constructor() {
         makeAutoObservable(this);
     }
+
 
     async setChat(chat: Chat, senderId: string) {
         if (this.chat?.id !== chat.id) {
