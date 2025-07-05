@@ -1,13 +1,13 @@
-import type { Message } from "./message"
+import type { Message } from "./message";
 
 export type ChatItem =
-    | {
-        id: string
-        type: "message"
-        data: Message
+  | {
+      id: string;
+      type: "message";
+      data: Message;
     }
-    | {
-        id: string
-        type: "date"
-        data: Date
-    }
+  | {
+      id: string;
+      type: "date";
+      data: Date;
+    };

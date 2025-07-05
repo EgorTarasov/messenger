@@ -22,18 +22,15 @@ function RouteComponent() {
     <>
       <div className="flex flex-col md:flex-row gap-6">
         <div className="flex-1">
-          <EditProfileForm >
+          <EditProfileForm>
             <>
               <Button onClick={handleGoBack}>Назад</Button>
               <LogoutButton onLogoutClick={handleLogout} />
             </>
           </EditProfileForm>
         </div>
-        <div className="flex flex-col gap-4 md:justify-start md:items-start items-stretch">
-
-        </div>
+        <div className="flex flex-col gap-4 md:justify-start md:items-start items-stretch"></div>
       </div>
-
     </>
   );
 }

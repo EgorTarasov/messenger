@@ -11,7 +11,6 @@ import {
   getAuthStoreUser,
 } from "../api/user";
 
-
 interface UsersListState {
   items: User[];
   totalItems: number;
@@ -274,8 +273,8 @@ class UserStore {
 export const userStore = new UserStore();
 
 export const getUser = (): User | null => {
-  return getAuthStoreUser()
-}
+  return getAuthStoreUser();
+};
 
 export const authenticated = (): boolean => {
   return isAuthenticated();
@@ -290,7 +289,7 @@ export const getUsersByUsername = async (username: string): Promise<User[]> => {
     const result = await getUsersByFilters({ username: username });
     return result.items as User[];
   } catch (error) {
-    console.error('Failed to get users by username:', error);
+    console.error("Failed to get users by username:", error);
     return [];
   }
-}
+};

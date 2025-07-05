@@ -2,9 +2,11 @@ import pb from "@/shared/pocketbase";
 import type { User } from "../model/user";
 
 export const getUserAvatar = async (user: User): Promise<string> => {
-  const picUrl = pb.files.getURL(user, user.avatar, { token: pb.authStore.token });
-  return picUrl
-}
+  const picUrl = pb.files.getURL(user, user.avatar, {
+    token: pb.authStore.token,
+  });
+  return picUrl;
+};
 
 export async function getUserByID(params: { id: string }): Promise<User> {
   try {
@@ -71,7 +73,9 @@ export const getUsersByFilters = async (
     const filterParts: string[] = [];
 
     if (search) {
-      filterParts.push(`(name ~ "${search}" || email ~ "${search}") || username ~ "${search}`);
+      filterParts.push(
+        `(name ~ "${search}" || email ~ "${search}") || username ~ "${search}`,
+      );
     }
 
     if (verified !== undefined) {
@@ -98,14 +102,17 @@ export const getUsersByFilters = async (
   }
 };
 
-export const updateUser = async (userId: string, name: string): Promise<User> => {
+export const updateUser = async (
+  userId: string,
+  name: string,
+): Promise<User> => {
   const data = {
-    "name": name,
+    name: name,
   };
 
-  const record = await pb.collection('users').update(userId, data);
+  const record = await pb.collection("users").update(userId, data);
   return record as User;
-}
+};
 
 export const isAuthenticated = (): boolean => {
   return pb.authStore.isValid;
@@ -118,4 +125,3 @@ export const getAuthStoreUser = (): User | null => {
 export const pbLogout = () => {
   pb.authStore.clear();
 };
-

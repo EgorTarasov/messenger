@@ -6,5 +6,3 @@ const pb = new PocketBase(
 
 pb.autoCancellation(false);
 export default pb;
-
-

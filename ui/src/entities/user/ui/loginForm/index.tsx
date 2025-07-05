@@ -72,7 +72,7 @@ export const LoginForm = observer(({ onSuccess }: LoginCardProps) => {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       e.preventDefault();
       form.handleSubmit(onSubmit)();
     }
@@ -160,7 +160,7 @@ export const LoginForm = observer(({ onSuccess }: LoginCardProps) => {
               )}
             />
             {/* Hidden submit button for Enter key functionality */}
-            <button type="submit" style={{ display: 'none' }} />
+            <button type="submit" style={{ display: "none" }} />
           </form>
         </Form>
       </CardContent>
