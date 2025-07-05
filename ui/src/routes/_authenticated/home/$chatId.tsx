@@ -1,6 +1,7 @@
 import { ChatView, getChatById } from "@/entities/chats";
 import { getUser } from "@/entities/user";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/home/$chatId")({
   component: ChatPage,
@@ -10,8 +11,15 @@ export const Route = createFileRoute("/_authenticated/home/$chatId")({
     return { chat, user };
   },
   pendingComponent: () => <div>Loading chat...</div>,
-  errorComponent: ({ error }) => <div>Error loading chat: {error.message}</div>,
+  errorComponent: ({ error }) => chatNotFound(error),
 });
+
+const chatNotFound = (error: Error) => {
+  toast(`Ошибка при загрузке чата: ${error.message}`);
+  const navigate = useNavigate();
+  navigate({ to: "/home" });
+  return <></>;
+};
 
 function ChatPage() {
   const { chat, user } = Route.useLoaderData();

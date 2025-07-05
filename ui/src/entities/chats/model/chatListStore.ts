@@ -1,6 +1,6 @@
 import { makeAutoObservable, runInAction } from "mobx";
 import type { Chat } from "./chat";
-import { getAllChats } from "../api/chat";
+import { getAllChats, deleteChat as deleteChatApi } from "../api/chat";
 
 class ChatsStore {
   chats: Chat[] = [];
@@ -74,8 +74,19 @@ class ChatsStore {
     }
   };
 
-  removeChat = (chatId: string) => {
-    this.chats = this.chats.filter((chat) => chat.id !== chatId);
+  removeChat = async (chatId: string) => {
+    try {
+      await deleteChatApi(chatId);
+      runInAction(() => {
+        this.chats = this.chats.filter((chat) => chat.id !== chatId);
+      });
+    } catch (error) {
+      runInAction(() => {
+        this.error =
+          error instanceof Error ? error.message : "Failed to delete chat";
+      });
+      throw error; // Re-throw to handle in UI if needed
+    }
   };
 }
 

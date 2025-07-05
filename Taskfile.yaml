@@ -39,7 +39,7 @@ tasks:
     run:
         dir: backend
         cmds:
-            - go run cmd/server/main.go serve --dir pb_data
+            - go run cmd/server/main.go serve --dir ./backend/pb_data
 
     collections:
         dir: backend
