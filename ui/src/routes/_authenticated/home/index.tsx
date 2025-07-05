@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { CreateChatButton } from "@/entities/chats";
-import { getUsersByUsername } from "@/entities/user";
+import { getUser, getUsersByUsername } from "@/entities/user";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_authenticated/home/")({
@@ -9,6 +9,7 @@ export const Route = createFileRoute("/_authenticated/home/")({
 
 function HomePage() {
   const navigate = useNavigate();
+  const currentUser = getUser();
 
   const filterUsers = async (username: string) => {
     return await getUsersByUsername(username);
@@ -23,6 +24,7 @@ function HomePage() {
       <div className="flex flex-col items-center">
         <h1>Выберите или создайте чат!</h1>
         <CreateChatButton
+          currentUser={currentUser!}
           filterUsers={filterUsers}
           handleSuccess={handleNewChat}
         >

@@ -1,3 +1,4 @@
+import { Separator } from "@/components/ui/separator";
 import {
   Sidebar,
   SidebarContent,
@@ -8,7 +9,7 @@ import {
   SidebarHeader,
 } from "@/components/ui/sidebar";
 import { ChatList } from "@/entities/chats";
-import { getUsersByUsername, UserAvatar } from "@/entities/user";
+import { getUser, getUsersByUsername, UserAvatar } from "@/entities/user";
 import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_authenticated/home")({
@@ -29,14 +30,16 @@ function ChatLayout() {
     <>
       <SidebarProvider>
         <Sidebar>
-          <SidebarHeader>
+          <SidebarHeader className="bg-white">
             <UserAvatar />
+            <Separator />
           </SidebarHeader>
-          <SidebarContent>
+          <SidebarContent className="bg-white">
             <SidebarGroup>
               <SidebarGroupLabel>Chats</SidebarGroupLabel>
               <SidebarGroupContent>
                 <ChatList
+                  currentUser={getUser()!}
                   filterUsers={filterUsers}
                   handleNewChat={handleNewChat}
                 />

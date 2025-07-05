@@ -23,13 +23,19 @@ interface User {
 }
 
 interface CreateChatButtonProps {
+  currentUser: User;
   filterUsers: (query: string) => Promise<User[]>;
   handleSuccess: (chatID: string) => void;
   children?: React.ReactNode;
 }
 
 export const CreateChatButton = observer(
-  ({ filterUsers, handleSuccess, children }: CreateChatButtonProps) => {
+  ({
+    filterUsers,
+    handleSuccess,
+    children,
+    currentUser,
+  }: CreateChatButtonProps) => {
     const [username, setUsername] = useState("");
     const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
     const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
@@ -49,7 +55,8 @@ export const CreateChatButton = observer(
           // Filter out already selected users
           const availableUsers = users.filter(
             (user) =>
-              !selectedUsers.some((selected) => selected.id === user.id),
+              user.id !== currentUser.id &&
+              !selectedUsers.some((s) => s.id === user.id),
           );
           setFilteredUsers(availableUsers.slice(0, 5)); // Top 5 available users
         } catch (error) {
@@ -83,13 +90,12 @@ export const CreateChatButton = observer(
     const handleSubmit = (e: React.FormEvent) => {
       e.preventDefault();
       if (selectedUsers.length > 0) {
-        const participantIds = selectedUsers.map((user) => user.id);
         const chatTitle =
           selectedUsers.length === 1
             ? selectedUsers[0].username
             : `Group with ${selectedUsers.map((u) => u.username).join(", ")}`;
 
-        createChat(participantIds, chatTitle)
+        createChat(selectedUsers, chatTitle)
           .then((newChat) => {
             chatsStore.addChat(newChat);
             handleSuccess(newChat.id);
@@ -164,6 +170,8 @@ export const CreateChatButton = observer(
                   onChange={(e) => setUsername(e.target.value)}
                   placeholder="Введите имя пользователя"
                   autoComplete="off"
+                  data-lpignore="true"
+                  data-form-type="other"
                 />
 
                 {/* User suggestions dropdown */}
@@ -198,7 +206,7 @@ export const CreateChatButton = observer(
                 )}
               </div>
             </div>
-            <DialogFooter>
+            <DialogFooter className="pt-5">
               <DialogClose asChild>
                 <Button variant="outline">Закрыть</Button>
               </DialogClose>

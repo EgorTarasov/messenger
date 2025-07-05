@@ -1,15 +1,11 @@
-import {
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton,
-} from "@/components/ui/sidebar";
+import { SidebarMenu, SidebarMenuItem } from "@/components/ui/sidebar";
 import { observer } from "mobx-react-lite";
 import { ChatRow } from "../chatRow";
 import { Input } from "@/components/ui/input";
 import { chatsStore } from "../../model/chatListStore";
 import { useEffect, useState } from "react";
 import { CreateChatButton } from "../createChatButton";
-import { Link } from "@tanstack/react-router";
+import { Separator } from "@/components/ui/separator";
 
 interface User {
   id: string;
@@ -18,13 +14,15 @@ interface User {
 }
 
 interface ChatListProps {
+  currentUser: User;
   filterUsers: (query: string) => Promise<User[]>;
   handleNewChat: (chatId: string) => void;
 }
 
 export const ChatList = observer(
-  ({ filterUsers, handleNewChat }: ChatListProps) => {
+  ({ filterUsers, handleNewChat, currentUser }: ChatListProps) => {
     const [localSearchQuery, setLocalSearchQuery] = useState("");
+    const [activeInput, setActiveInput] = useState<boolean>(false);
 
     useEffect(() => {
       chatsStore.loadChats();
@@ -62,20 +60,29 @@ export const ChatList = observer(
             placeholder="🔎 Поиск"
             value={localSearchQuery}
             onChange={handleSearchChange}
+            onFocus={() => setActiveInput(true)}
+            onBlur={() => setActiveInput(false)}
           />
-          <CreateChatButton
-            filterUsers={filterUsers}
-            handleSuccess={handleSuccess}
-          />
+          {!activeInput && (
+            <CreateChatButton
+              currentUser={currentUser}
+              filterUsers={filterUsers}
+              handleSuccess={handleSuccess}
+            />
+          )}
         </div>
         <SidebarMenu>
+          {chatsStore.filteredChats.length === 0 && (
+            <>
+              <div className="w-full h-16 flex items-center align-middle">
+                <h5>Чаты не найдены</h5>
+              </div>
+            </>
+          )}
           {chatsStore.filteredChats.map((chat) => (
-            <SidebarMenuItem key={chat.id}>
-              <Link to="/home/$chatId" params={{ chatId: chat.id }}>
-                <SidebarMenuButton asChild>
-                  <ChatRow chat={chat} />
-                </SidebarMenuButton>
-              </Link>
+            <SidebarMenuItem key={chat.id} className="h-16 ">
+              <ChatRow chat={chat} />
+              <Separator />
             </SidebarMenuItem>
           ))}
         </SidebarMenu>

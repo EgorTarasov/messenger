@@ -73,22 +73,37 @@ export const getChatById = async (chatId: string): Promise<Chat> => {
   }
 };
 
+interface User {
+  id: string;
+  username: string;
+  avatar?: string;
+}
+
 export const createChat = async (
-  participantsIds: string[],
+  participants: User[],
   title?: string,
 ): Promise<Chat> => {
   try {
-    if (participantsIds.length == 1) {
-      title = "personal";
+    if (participants.length == 1) {
+      title = participants[0].username;
     }
     const data = {
       title,
-      participants: participantsIds,
+      participants: participants.map((u, _) => u.id),
     };
     const record = await pb.collection("chats").create(data);
     return record as Chat;
   } catch (error) {
     console.error("Failed to create chat:", error);
+    throw error;
+  }
+};
+
+export const deleteChat = async (chatId: string): Promise<void> => {
+  try {
+    await pb.collection("chats").delete(chatId);
+  } catch (error) {
+    console.error("Failed to delete chat:", error);
     throw error;
   }
 };
