@@ -54,7 +54,9 @@ export const CreateChatButton = observer(
           const users = await filterUsers(username);
           // Filter out already selected users
           const availableUsers = users.filter(
-            (user) => user.id != currentUser.id,
+            (user) =>
+              user.id !== currentUser.id &&
+              !selectedUsers.some((s) => s.id === user.id),
           );
           setFilteredUsers(availableUsers.slice(0, 5)); // Top 5 available users
         } catch (error) {

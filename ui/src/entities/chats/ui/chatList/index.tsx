@@ -1,15 +1,10 @@
-import {
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton,
-} from "@/components/ui/sidebar";
+import { SidebarMenu, SidebarMenuItem } from "@/components/ui/sidebar";
 import { observer } from "mobx-react-lite";
 import { ChatRow } from "../chatRow";
 import { Input } from "@/components/ui/input";
 import { chatsStore } from "../../model/chatListStore";
 import { useEffect, useState } from "react";
 import { CreateChatButton } from "../createChatButton";
-import { Link } from "@tanstack/react-router";
 import { Separator } from "@/components/ui/separator";
 
 interface User {
