@@ -1,4 +1,4 @@
-import { makeAutoObservable, runInAction } from "mobx";
+import { computed, makeAutoObservable, runInAction } from "mobx";
 import type { Chat } from "./chat";
 import type { Message } from "./message"
 import {
@@ -6,6 +6,7 @@ import {
     subscribeToChatMessages,
     type RealtimeMessageEvent
 } from "../api/messages";
+import type { ChatItem } from "./chatItem";
 
 const pageSize = 20;
 
@@ -24,8 +25,39 @@ class CurrentChatStore {
 
     constructor() {
         makeAutoObservable(this);
+        messagesWithSeparators: computed;
     }
 
+    get messagesWithSeparators() {
+        if (this.messages.length === 0) return [];
+
+        const items: ChatItem[] = [];
+        let prevDate: Date | null = null;
+
+        // Messages are already in chronological order (oldest to newest)
+        this.messages.forEach((message) => {
+            const messageDate = new Date(message.created);
+
+            // Add date separator if it's a new day
+            if (!prevDate || prevDate.toDateString() !== messageDate.toDateString()) {
+                items.push({
+                    type: "date",
+                    id: `date-${messageDate.toISOString().split('T')[0]}`,
+                    data: messageDate,
+                });
+                prevDate = messageDate;
+            }
+
+            // Add message
+            items.push({
+                type: "message",
+                id: message.id,
+                data: message,
+            });
+        });
+
+        return items;
+    }
 
     async setChat(chat: Chat, senderId: string) {
         if (this.chat?.id !== chat.id) {
@@ -81,6 +113,7 @@ class CurrentChatStore {
                 case 'create':
                     // Add new message if it doesn't already exist
                     if (!this.messages.find(m => m.id === event.record.id)) {
+                        // New messages should be added at the end (newest)
                         this.messages.push(event.record);
                         this.totalItems += 1;
                     }
@@ -120,16 +153,17 @@ class CurrentChatStore {
             const response = await getChatMessages(this.chat.id, {
                 page: this.currentPage,
                 perPage: pageSize,
-                sort: 'created', // Oldest first for proper message order
+                sort: '-created', // Newest first (descending order)
                 expand: 'author'
             })
 
             runInAction(() => {
                 if (reset) {
-                    this.messages = response.items
+                    // For initial load, reverse to show oldest at top, newest at bottom
+                    this.messages = response.items.reverse()
                 } else {
-                    // Prepend older messages to the beginning
-                    this.messages = [...response.items, ...this.messages]
+                    // For loading more (older messages), prepend and reverse
+                    this.messages = [...response.items.reverse(), ...this.messages]
                 }
 
                 this.totalItems = response.totalItems
@@ -156,13 +190,13 @@ class CurrentChatStore {
             const response = await getChatMessages(this.chat!.id, {
                 page: this.currentPage,
                 perPage: pageSize,
-                sort: 'created',
+                sort: '-created', // Newest first from database
                 expand: 'author'
             })
 
             runInAction(() => {
-                // Prepend older messages
-                this.messages = [...response.items, ...this.messages]
+                // Prepend older messages (reverse because we got newest first from DB)
+                this.messages = [...response.items.reverse(), ...this.messages]
                 this.hasMore = response.page < response.totalPages
                 this.isLoadingMore = false
             })

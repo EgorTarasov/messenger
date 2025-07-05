@@ -5,6 +5,9 @@ import { MessageBubble } from "../chatMessage";
 import { currentChatStore } from "../../model/currentChatStore";
 import type { Chat } from "../../model/chat";
 
+
+
+
 interface MessagesAreaProps {
     chat: Chat;
     userId: string;
@@ -13,6 +16,44 @@ interface MessagesAreaProps {
 export interface MessagesAreaRef {
     scrollToBottom: () => void;
 }
+
+
+interface DateSeperatorProps {
+    date: Date
+}
+
+const DateSeperator = ({ date }: DateSeperatorProps) => {
+    const formatDate = (date: Date) => {
+        const today = new Date();
+        const yesterday = new Date(today);
+        yesterday.setDate(yesterday.getDate() - 1);
+
+        if (date.toDateString() === today.toDateString()) {
+            return "Сегодня";
+        } else if (date.toDateString() === yesterday.toDateString()) {
+            return "Вчера";
+        } else {
+            return date.toLocaleDateString('ru-RU', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            });
+        }
+    };
+
+    return (
+        <div className="flex items-center justify-center my-4">
+            <div className="flex-1 h-px bg-gradient-to-r from-transparent via-blue-200 to-transparent"></div>
+            <div className="px-4 py-2 mx-4 bg-white/70 backdrop-blur-sm rounded-full border border-blue-200 shadow-sm">
+                <span className="text-sm font-medium text-blue-600">
+                    {formatDate(date)}
+                </span>
+            </div>
+            <div className="flex-1 h-px bg-gradient-to-r from-transparent via-blue-200 to-transparent"></div>
+        </div>
+    );
+};
+
 
 export const MessagesArea = observer(forwardRef<MessagesAreaRef, MessagesAreaProps>(({ chat, userId }, ref) => {
     const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -73,13 +114,18 @@ export const MessagesArea = observer(forwardRef<MessagesAreaRef, MessagesAreaPro
                     </div>
                 ) : (
                     <div className="space-y-2">
-                        {currentChatStore.messages.map((message) => (
-                            <MessageBubble
-                                key={message.id}
-                                message={message}
-                                isOwnMessage={message.author === userId}
-                                isGroup={chat.participants.length > 2}
-                            />
+                        {currentChatStore.messagesWithSeparators.map((item) => (
+                            <div key={item.id}>
+                                {item.type === "date" ? (
+                                    <DateSeperator date={item.data} />
+                                ) : (
+                                    <MessageBubble
+                                        message={item.data}
+                                        isOwnMessage={item.data.author === userId}
+                                        isGroup={chat.participants.length > 2}
+                                    />
+                                )}
+                            </div>
                         ))}
                         <div ref={messagesEndRef} />
                     </div>
@@ -88,4 +134,5 @@ export const MessagesArea = observer(forwardRef<MessagesAreaRef, MessagesAreaPro
         </div>
     );
 }));
+
 
