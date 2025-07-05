@@ -15,6 +15,8 @@ tasks:
         dir: "{{.USER_WORKING_DIR}}"
         cmds:
             - task: docker
+            - docker stop messenger
+            - docker container rm messenger
             - docker run -d -p 8090:8090 -v {{.DATA}}/backend/pb_data:/data/pb_data --name messenger messenger
 
     build:
