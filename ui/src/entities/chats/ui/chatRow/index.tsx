@@ -31,7 +31,7 @@ export const ChatRow = observer(({ chat }: ChatRowProps) => {
     setIsOpen(true);
   };
 
-  const handleDeletaChat = async () => {
+  const handleDeleteChat = async () => {
     await chatsStore.removeChat(chat.id);
     navigate({ to: "/home" });
   };
@@ -70,7 +70,7 @@ export const ChatRow = observer(({ chat }: ChatRowProps) => {
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem variant="destructive" onClick={handleDeletaChat}>
+          <DropdownMenuItem variant="destructive" onClick={handleDeleteChat}>
             Удалить чат
           </DropdownMenuItem>
           <DropdownMenuItem>Настройки чата</DropdownMenuItem>

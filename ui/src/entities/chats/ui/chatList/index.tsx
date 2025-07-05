@@ -72,7 +72,7 @@ export const ChatList = observer(
           )}
         </div>
         <SidebarMenu>
-          {chatsStore.filteredChats.length == 0 && (
+          {chatsStore.filteredChats.length === 0 && (
             <>
               <div className="w-full h-16 flex items-center align-middle">
                 <h5>Чаты не найдены</h5>
