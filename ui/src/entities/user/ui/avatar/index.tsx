@@ -15,7 +15,7 @@ import { getUserAvatar } from "../../api/user";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 export const UserAvatar = observer(() => {
-  const navigete = useNavigate();
+  const navigate = useNavigate();
   const user = userStore.currentUser;
   const [avatarUrl, setAvatarUrl] = useState<string>("");
   const isMobile = useIsMobile();
@@ -28,7 +28,7 @@ export const UserAvatar = observer(() => {
 
   const handleProfileClick = () => {
     console.log("Opening user profile/settings");
-    navigete({ to: "/me" });
+    navigate({ to: "/me" });
   };
 
   const handleKeyDown = (event: KeyboardEvent) => {
