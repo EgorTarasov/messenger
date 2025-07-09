@@ -6,7 +6,7 @@ import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 const NotFoundComponent = () => {
   const navigate = useNavigate();
   return (
-    <div className="flex flex-col items-center justify-center h-screen gap-5">
+    <div className="flex flex-col items-center justify-center h-screen gap-5 overflow-hidden">
       <h1 className="text-3xl font-bold">Page Not Found</h1>
       <p className="text-lg text-gray-600">
         The page you're looking for doesn't exist.
@@ -22,10 +22,10 @@ const NotFoundComponent = () => {
 
 export const Route = createRootRoute({
   component: () => (
-    <>
+    <div className="h-screen w-screen overflow-hidden">
       <Outlet />
       {import.meta.env.DEV && <TanStackRouterDevtools />}
-    </>
+    </div>
   ),
   notFoundComponent: NotFoundComponent,
 });

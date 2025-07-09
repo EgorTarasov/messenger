@@ -116,8 +116,21 @@
     outline-color: color-mix(in srgb, var(--color-ring) 50%, transparent);
   }
 
+  html {
+    height: 100%;
+    overflow: hidden;
+  }
+
   body {
-    @apply bg-background text-foreground;
+    height: 100%;
+    overflow: hidden;
+    background-color: var(--background);
+    color: var(--foreground);
+  }
+
+  #app {
+    height: 100vh;
+    overflow: hidden;
   }
 
   /* Add heading styles to fix font size issue */

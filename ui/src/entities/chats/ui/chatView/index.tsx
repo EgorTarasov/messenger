@@ -26,14 +26,16 @@ export const ChatView = observer(({ chat, userId }: ChatViewProps) => {
   }, [currentChatStore.messages.length]);
 
   return (
-    <div className="h-screen flex flex-col overflow-hidden">
+    <div className="h-full flex flex-col overflow-hidden">
       {/* Fixed header */}
       <div className="flex-shrink-0">
         <ChatHeader chat={chat} />
       </div>
 
-      {/* Scrollable messages area */}
-      <MessagesArea ref={messagesAreaRef} chat={chat} userId={userId} />
+      {/* Scrollable messages area - constrain this */}
+      <div className="flex-1 overflow-hidden"> {/* Add overflow-hidden */}
+        <MessagesArea ref={messagesAreaRef} chat={chat} userId={userId} />
+      </div>
 
       {/* Fixed input area */}
       <div className="flex-shrink-0">

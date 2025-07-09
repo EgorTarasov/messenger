@@ -20,7 +20,7 @@ function HomePage() {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen">
+    <div className="h-full flex justify-center items-center">
       <div className="flex flex-col items-center">
         <h1>Выберите или создайте чат!</h1>
         <CreateChatButton

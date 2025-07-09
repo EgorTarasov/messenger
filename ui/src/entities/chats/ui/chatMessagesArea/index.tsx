@@ -1,9 +1,10 @@
 import { observer } from "mobx-react-lite";
-import { useRef, useCallback, forwardRef, useImperativeHandle } from "react";
+import { useRef, useCallback, forwardRef, useImperativeHandle, useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import { MessageBubble } from "../chatMessage";
 import { currentChatStore } from "../../model/currentChatStore";
 import type { Chat } from "../../model/chat";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface MessagesAreaProps {
   chat: Chat;
@@ -52,12 +53,11 @@ const DateSeperator = ({ date }: DateSeperatorProps) => {
 
 export const MessagesArea = observer(
   forwardRef<MessagesAreaRef, MessagesAreaProps>(({ chat, userId }, ref) => {
-    const messagesEndRef = useRef<HTMLDivElement>(null);
-    const messagesContainerRef = useRef<HTMLDivElement>(null);
+    const scrollAreaRef = useRef<HTMLDivElement>(null);
 
     // Handle scroll to load more messages
-    const handleScroll = useCallback(() => {
-      const container = messagesContainerRef.current;
+    const handleScroll = useCallback((event: React.UIEvent<HTMLDivElement>) => {
+      const container = event.currentTarget;
       if (!container) return;
 
       // Load more when scrolled to top
@@ -78,12 +78,25 @@ export const MessagesArea = observer(
       }
     }, []);
 
+    // Auto-scroll to bottom when messages load initially or new messages arrive
+    useEffect(() => {
+      if (currentChatStore.messages.length > 0 && !currentChatStore.isLoadingMore) {
+        const viewport = scrollAreaRef.current?.querySelector('[data-radix-scroll-area-viewport]');
+        if (viewport) {
+          // Use setTimeout to ensure DOM is updated
+          setTimeout(() => {
+            viewport.scrollTop = viewport.scrollHeight;
+          }, 0);
+        }
+      }
+    }, [currentChatStore.messages.length, currentChatStore.isLoadingMore]);
+
     useImperativeHandle(ref, () => ({
       scrollToBottom: () => {
-        const container = messagesContainerRef.current;
-        if (container) {
-          container.scrollTo({
-            top: container.scrollHeight,
+        const viewport = scrollAreaRef.current?.querySelector('[data-radix-scroll-area-viewport]');
+        if (viewport) {
+          viewport.scrollTo({
+            top: viewport.scrollHeight,
             behavior: "smooth",
           });
         }
@@ -91,12 +104,12 @@ export const MessagesArea = observer(
     }));
 
     return (
-      <div
-        ref={messagesContainerRef}
-        className="flex-1 overflow-y-auto min-h-0 bg-gradient-to-b from-blue-50 to-blue-100"
-        onScroll={handleScroll}
+      <ScrollArea
+        ref={scrollAreaRef}
+        className="h-full bg-gradient-to-b from-blue-50 to-blue-100"
+        onScrollCapture={handleScroll}
       >
-        <div className="p-4 ">
+        <div className="p-4">
           {/* Loading more indicator */}
           {currentChatStore.isLoadingMore && (
             <div className="flex justify-center mb-4">
@@ -106,7 +119,7 @@ export const MessagesArea = observer(
 
           {/* Initial loading */}
           {currentChatStore.isLoading &&
-          currentChatStore.messages.length === 0 ? (
+            currentChatStore.messages.length === 0 ? (
             <div className="flex items-center justify-center h-full">
               <Loader2 className="h-6 w-6 animate-spin text-blue-500" />
             </div>
@@ -132,11 +145,10 @@ export const MessagesArea = observer(
                   )}
                 </div>
               ))}
-              <div ref={messagesEndRef} />
             </div>
           )}
         </div>
-      </div>
+      </ScrollArea>
     );
   }),
 );
