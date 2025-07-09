@@ -3,6 +3,9 @@ import { getUser } from "@/entities/user";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { useEffect } from "react";
+import { useSidebar } from "@/components/ui/sidebar";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/home/$chatId")({
   component: ChatPage,
@@ -28,6 +31,20 @@ function ChatNotFound({ error }: { error: Error }) {
 
 function ChatPage() {
   const { chat, user } = Route.useLoaderData();
+  const { isMobile, toggleSidebar, setOpenMobile } = useSidebar();
+  useEffect(() => {
+    if (isMobile) {
+      setOpenMobile(false);
+    }
+  }, [isMobile, setOpenMobile]);
 
-  return <ChatView chat={chat} userId={user?.id} />;
+  const backButton = isMobile ? (
+    <ArrowLeft className="h-4 w-4" onClick={toggleSidebar} />
+  ) : (
+    <Button variant="ghost" size="sm" onClick={() => window.history.back()}>
+      <ArrowLeft className="h-4 w-4" />
+    </Button>
+  );
+
+  return <ChatView chat={chat} userId={user?.id} backButton={backButton} />;
 }
