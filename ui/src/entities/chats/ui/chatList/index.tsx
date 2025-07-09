@@ -14,13 +14,15 @@ interface User {
 }
 
 interface ChatListProps {
+  currentChatID?: string
+  onCurrentChatID?: () => void;
   currentUser: User;
   filterUsers: (query: string) => Promise<User[]>;
   handleNewChat: (chatId: string) => void;
 }
 
 export const ChatList = observer(
-  ({ filterUsers, handleNewChat, currentUser }: ChatListProps) => {
+  ({ filterUsers, handleNewChat, currentUser, currentChatID, onCurrentChatID }: ChatListProps) => {
     const [localSearchQuery, setLocalSearchQuery] = useState("");
     const [activeInput, setActiveInput] = useState<boolean>(false);
 
@@ -79,12 +81,19 @@ export const ChatList = observer(
               </div>
             </>
           )}
-          {chatsStore.filteredChats.map((chat) => (
-            <SidebarMenuItem key={chat.id} className="h-16 ">
-              <ChatRow chat={chat} />
-              <Separator />
-            </SidebarMenuItem>
-          ))}
+          {chatsStore.filteredChats.map((chat) => {
+            const isCurrent = currentChatID !== undefined && chat.id === currentChatID;
+            return (
+              <SidebarMenuItem key={chat.id} className="h-16 ">
+                <ChatRow
+                  chat={chat}
+                  current={isCurrent}
+                  onCurrent={onCurrentChatID || (() => { })}
+                />
+                <Separator />
+              </SidebarMenuItem>
+            );
+          })}
         </SidebarMenu>
       </>
     );

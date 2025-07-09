@@ -12,11 +12,14 @@ import {
 import { useEffect, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { getUserAvatar } from "../../api/user";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export const UserAvatar = observer(() => {
   const navigete = useNavigate();
   const user = userStore.currentUser;
   const [avatarUrl, setAvatarUrl] = useState<string>("");
+  const isMobile = useIsMobile();
+
   useEffect(() => {
     getUserAvatar(user!).then((v: string) => {
       setAvatarUrl(v);
@@ -24,10 +27,8 @@ export const UserAvatar = observer(() => {
   }, []);
 
   const handleProfileClick = () => {
-    // Handle profile/settings action here
     console.log("Opening user profile/settings");
     navigete({ to: "/me" });
-    // You can navigate to settings page, open modal, etc.
   };
 
   const handleKeyDown = (event: KeyboardEvent) => {
@@ -41,11 +42,13 @@ export const UserAvatar = observer(() => {
   };
 
   useEffect(() => {
-    document.addEventListener("keydown", handleKeyDown);
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, []);
+    if (!isMobile) {
+      document.addEventListener("keydown", handleKeyDown);
+      return () => {
+        document.removeEventListener("keydown", handleKeyDown);
+      };
+    }
+  }, [isMobile]);
 
   return (
     <DropdownMenu>
@@ -64,7 +67,9 @@ export const UserAvatar = observer(() => {
         <DropdownMenuGroup>
           <DropdownMenuItem onClick={handleProfileClick}>
             Profile
-            <DropdownMenuShortcut>{getSettingsShortcut()}</DropdownMenuShortcut>
+            {!isMobile && (
+              <DropdownMenuShortcut>{getSettingsShortcut()}</DropdownMenuShortcut>
+            )}
           </DropdownMenuItem>
         </DropdownMenuGroup>
       </DropdownMenuContent>

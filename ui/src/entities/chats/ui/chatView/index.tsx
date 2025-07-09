@@ -2,16 +2,17 @@ import { observer } from "mobx-react-lite";
 import type { Chat } from "../../model/chat";
 import { ChatInput } from "../chatInput";
 import { currentChatStore } from "../../model/currentChatStore";
-import { useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { ChatHeader } from "../chatHeader";
 import { MessagesArea, type MessagesAreaRef } from "../chatMessagesArea";
 
 interface ChatViewProps {
   chat: Chat;
   userId: string;
+  backButton?: React.ReactNode
 }
 
-export const ChatView = observer(({ chat, userId }: ChatViewProps) => {
+export const ChatView = observer(({ chat, userId, backButton }: ChatViewProps) => {
   const messagesAreaRef = useRef<MessagesAreaRef>(null);
 
   useEffect(() => {
@@ -29,7 +30,7 @@ export const ChatView = observer(({ chat, userId }: ChatViewProps) => {
     <div className="h-full flex flex-col overflow-hidden">
       {/* Fixed header */}
       <div className="flex-shrink-0">
-        <ChatHeader chat={chat} />
+        <ChatHeader chat={chat} backButton={backButton} />
       </div>
 
       {/* Scrollable messages area - constrain this */}

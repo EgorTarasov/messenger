@@ -2,6 +2,8 @@ import { Button } from "@/components/ui/button";
 import { CreateChatButton } from "@/entities/chats";
 import { getUser, getUsersByUsername } from "@/entities/user";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useSidebar } from "@/components/ui/sidebar";
+import { useEffect } from "react";
 
 export const Route = createFileRoute("/_authenticated/home/")({
   component: HomePage,
@@ -10,6 +12,7 @@ export const Route = createFileRoute("/_authenticated/home/")({
 function HomePage() {
   const navigate = useNavigate();
   const currentUser = getUser();
+  const { isMobile, setOpenMobile } = useSidebar();
 
   const filterUsers = async (username: string) => {
     return await getUsersByUsername(username);
@@ -18,6 +21,12 @@ function HomePage() {
   const handleNewChat = async (newChatID: string) => {
     navigate({ to: `/home/${newChatID}` });
   };
+
+  useEffect(() => {
+    if (isMobile) {
+      setOpenMobile(true);
+    }
+  }, [isMobile, setOpenMobile]);
 
   return (
     <div className="h-full flex justify-center items-center">
