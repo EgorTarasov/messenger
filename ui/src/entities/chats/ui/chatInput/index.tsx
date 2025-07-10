@@ -18,8 +18,6 @@ export const ChatInput = observer(({ chatId, authorId }: ChatInputProps) => {
   const handleSendMessage = () => {
     if (message.trim()) {
       console.log("Sending message:", message, chatId, authorId);
-      // 1) insert new message into store
-      // 2) send request to server
       createMessage({
         content: message,
         chat: chatId,
@@ -40,15 +38,15 @@ export const ChatInput = observer(({ chatId, authorId }: ChatInputProps) => {
   };
 
   return (
-    <div className="flex-shrink-0 bg-background border-t p-4">
-      <div className="flex gap-2 items-end">
+    <div className="w-full">
+      <div className="flex gap-2 md:gap-3 items-end">
         <div className="flex-1">
           <Input
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder="Введите сообщение..."
-            className="resize-none"
+            className="resize-none h-10 md:h-12 text-base"
             autoComplete="off"
           />
         </div>
@@ -56,9 +54,9 @@ export const ChatInput = observer(({ chatId, authorId }: ChatInputProps) => {
           onClick={handleSendMessage}
           disabled={!message.trim()}
           size="icon"
-          className="bg-blue-500 hover:bg-blue-600 text-white disabled:bg-gray-300"
+          className="bg-blue-500 hover:bg-blue-600 text-white disabled:bg-gray-300 h-10 w-10 md:h-12 md:w-12 flex-shrink-0"
         >
-          <Send className="h-4 w-4" />
+          <Send className="h-4 w-4 md:h-5 md:w-5" />
         </Button>
       </div>
     </div>

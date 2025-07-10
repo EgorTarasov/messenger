@@ -23,8 +23,8 @@ const NotFoundComponent = () => {
 export const Route = createRootRoute({
   component: () => (
     <div className="h-screen w-screen overflow-hidden">
-      <Outlet />
       {import.meta.env.DEV && <TanStackRouterDevtools />}
+      <Outlet />
     </div>
   ),
   notFoundComponent: NotFoundComponent,

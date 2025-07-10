@@ -57,22 +57,22 @@ export const MessagesArea = observer(
 
     // Handle scroll to load more messages
     const handleScroll = useCallback((event: React.UIEvent<HTMLDivElement>) => {
-      const container = event.currentTarget;
-      if (!container) return;
+      const viewport = event.currentTarget;
+      if (!viewport) return;
 
       // Load more when scrolled to top
       if (
-        container.scrollTop === 0 &&
+        viewport.scrollTop === 0 &&
         currentChatStore.hasMore &&
         !currentChatStore.isLoadingMore
       ) {
-        const prevScrollHeight = container.scrollHeight;
+        const prevScrollHeight = viewport.scrollHeight;
 
         currentChatStore.loadMoreMessages().then(() => {
           // Maintain scroll position after loading older messages
           requestAnimationFrame(() => {
-            const newScrollHeight = container.scrollHeight;
-            container.scrollTop = newScrollHeight - prevScrollHeight;
+            const newScrollHeight = viewport.scrollHeight;
+            viewport.scrollTop = newScrollHeight - prevScrollHeight;
           });
         });
       }
@@ -81,24 +81,30 @@ export const MessagesArea = observer(
     // Auto-scroll to bottom when messages load initially or new messages arrive
     useEffect(() => {
       if (currentChatStore.messages.length > 0 && !currentChatStore.isLoadingMore) {
-        const viewport = scrollAreaRef.current?.querySelector('[data-radix-scroll-area-viewport]');
-        if (viewport) {
-          // Use setTimeout to ensure DOM is updated
-          setTimeout(() => {
-            viewport.scrollTop = viewport.scrollHeight;
-          }, 0);
+        const scrollArea = scrollAreaRef.current;
+        if (scrollArea) {
+          // Find the viewport element inside ScrollArea
+          const viewport = scrollArea.querySelector('[data-radix-scroll-area-viewport]') as HTMLDivElement;
+          if (viewport) {
+            setTimeout(() => {
+              viewport.scrollTop = viewport.scrollHeight;
+            }, 0);
+          }
         }
       }
     }, [currentChatStore.messages.length, currentChatStore.isLoadingMore]);
 
     useImperativeHandle(ref, () => ({
       scrollToBottom: () => {
-        const viewport = scrollAreaRef.current?.querySelector('[data-radix-scroll-area-viewport]');
-        if (viewport) {
-          viewport.scrollTo({
-            top: viewport.scrollHeight,
-            behavior: "smooth",
-          });
+        const scrollArea = scrollAreaRef.current;
+        if (scrollArea) {
+          const viewport = scrollArea.querySelector('[data-radix-scroll-area-viewport]') as HTMLDivElement;
+          if (viewport) {
+            viewport.scrollTo({
+              top: viewport.scrollHeight,
+              behavior: "smooth",
+            });
+          }
         }
       },
     }));
@@ -120,11 +126,11 @@ export const MessagesArea = observer(
           {/* Initial loading */}
           {currentChatStore.isLoading &&
             currentChatStore.messages.length === 0 ? (
-            <div className="flex items-center justify-center h-full">
+            <div className="flex items-center justify-center min-h-[400px]">
               <Loader2 className="h-6 w-6 animate-spin text-blue-500" />
             </div>
           ) : currentChatStore.messages.length === 0 ? (
-            <div className="flex items-center justify-center h-full text-blue-600">
+            <div className="flex items-center justify-center min-h-[400px] text-blue-600">
               <div className="text-center">
                 <p className="text-lg">Нет сообщений</p>
                 <p className="text-sm">Начните разговор!</p>

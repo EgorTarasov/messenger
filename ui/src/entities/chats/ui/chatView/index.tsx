@@ -6,6 +6,7 @@ import React, { useEffect, useRef } from "react";
 import { ChatHeader } from "../chatHeader";
 import { MessagesArea, type MessagesAreaRef } from "../chatMessagesArea";
 
+
 interface ChatViewProps {
   chat: Chat;
   userId: string;
@@ -19,7 +20,6 @@ export const ChatView = observer(({ chat, userId, backButton }: ChatViewProps) =
     currentChatStore.setChat(chat, userId);
   }, [chat.id, userId]);
 
-  // Scroll to bottom when new messages arrive
   useEffect(() => {
     if (messagesAreaRef.current) {
       messagesAreaRef.current.scrollToBottom();
@@ -27,19 +27,19 @@ export const ChatView = observer(({ chat, userId, backButton }: ChatViewProps) =
   }, [currentChatStore.messages.length]);
 
   return (
-    <div className="h-full flex flex-col overflow-hidden">
-      {/* Fixed header */}
-      <div className="flex-shrink-0">
+    <div className="flex flex-col h-screen md:h-full relative">
+      {/* Fixed header - always at top */}
+      <div className="fixed top-0 left-0 right-0 z-40 bg-white border-b">
         <ChatHeader chat={chat} backButton={backButton} />
       </div>
 
-      {/* Scrollable messages area - constrain this */}
-      <div className="flex-1 overflow-hidden"> {/* Add overflow-hidden */}
+      {/* Scrollable messages area - with top padding for fixed header */}
+      <div className="flex-1 min-h-0 pt-16 pb-[80px] md:pb-0">
         <MessagesArea ref={messagesAreaRef} chat={chat} userId={userId} />
       </div>
 
-      {/* Fixed input area */}
-      <div className="flex-shrink-0">
+      {/* Fixed input area - positioned at bottom on mobile */}
+      <div className="flex-shrink-0 p-3 md:p-4 fixed bottom-0 left-0 right-0 bg-white border-t md:border-t-0 z-30 md:static">
         <ChatInput authorId={userId} chatId={chat.id} />
       </div>
     </div>
